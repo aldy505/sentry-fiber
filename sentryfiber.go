@@ -34,6 +34,18 @@ type Options struct {
 	Timeout time.Duration
 }
 
+// New initialize Fiber Handler for Sentry.
+// Example:
+//
+//   err := sentry.Init(sentry.ClientOptions{
+//   	Dsn: "your-public-dsn",
+//   })
+//   if err != nil {
+//   	log.Fatalln("sentry initialization failed")
+//   }
+//
+//   app := fiber.New()
+//   app.Use(sentryfiber.New(sentryfiber.Options{}))
 func New(options Options) fiber.Handler {
 	timeout := options.Timeout
 	if timeout == 0 {
@@ -47,6 +59,7 @@ func New(options Options) fiber.Handler {
 	return handler.Handle
 }
 
+// Handle wraps fiber.Ctx and recovers from caught panics.
 func (h *Handler) Handle(c *fiber.Ctx) error {
 	hub := sentry.CurrentHub().Clone()
 
@@ -76,6 +89,7 @@ func (h *Handler) recoverWithSentry(hub *sentry.Hub, ctx *fasthttp.RequestCtx) {
 	}
 }
 
+// GetHubFromContext retrieves attached *sentry.Hub instance from fiber.Ctx.
 func GetHubFromContext(c *fiber.Ctx) *sentry.Hub {
 	hub := c.Locals(valuesKey)
 	if hub, ok := hub.(*sentry.Hub); ok {

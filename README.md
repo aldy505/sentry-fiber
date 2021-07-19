@@ -1,5 +1,7 @@
 # Fiber Handler for Sentry SDK
 
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/aldy505/sentry-fiber?include_prereleases)](https://github.com/aldy505/sentry-fiber/releases) [![Go Reference](https://pkg.go.dev/badge/github.com/aldy505/sentry-fiber.svg)](https://pkg.go.dev/github.com/aldy505/sentry-fiber) [![Go Report Card](https://goreportcard.com/badge/github.com/aldy505/sentry-fiber)](https://goreportcard.com/report/github.com/aldy505/sentry-fiber) [![GitHub](https://img.shields.io/github/license/aldy505/sentry-fiber)](https://github.com/aldy505/sentry-fiber/blob/master/LICENSE) [![codecov](https://codecov.io/gh/aldy505/sentry-fiber/branch/master/graph/badge.svg?token=HUTQURBZ73)](https://codecov.io/gh/aldy505/sentry-fiber) [![CodeFactor](https://www.codefactor.io/repository/github/aldy505/sentry-fiber/badge)](https://www.codefactor.io/repository/github/aldy505/sentry-fiber) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/16c40f49aabe4e89afea7c1e1d90a483)](https://www.codacy.com/gh/aldy505/sentry-fiber/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=aldy505/sentry-fiber&amp;utm_campaign=Badge_Grade) [![Build test](https://github.com/aldy505/sentry-fiber/actions/workflows/ci.yml/badge.svg)](https://github.com/aldy505/sentry-fiber/actions/workflows/ci.yml)
+
 Welcome to another "I can't find one, so I made one" episode of mine. 
 
 ## Installation
@@ -102,3 +104,11 @@ WaitForDelivery bool
 // Timeout for the event delivery requests.
 Timeout         time.Duration
 ```
+
+## Contribute
+
+Yes please! I'm still new to Go and I create this module (or package if you will) to help me fulfill a need on my project. Feel free to refactor, add new feature, fix unknown bugs, and have fun!
+
+## License
+
+See [LICENSE](./LICENSE)
