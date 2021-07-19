@@ -24,41 +24,40 @@ type Handler struct {
 
 type Options struct {
 	// Repanic configures whether Sentry should repanic after recovery, in most cases it should be set to true,
-	// as gin.Default includes it's own Recovery middleware what handles http responses.
+	// as Fiber.Default includes it's own Recovery middleware what handles http responses.
 	Repanic bool
 	// WaitForDelivery configures whether you want to block the request before moving forward with the response.
-	// Because Gin's default Recovery handler doesn't restart the application,
+	// Because Fiber's default Recovery handler doesn't restart the application,
 	// it's safe to either skip this option or set it to false.
 	WaitForDelivery bool
 	// Timeout for the event delivery requests.
 	Timeout time.Duration
 }
 
-func New(options Options) *Handler {
+func New(options Options) fiber.Handler {
 	timeout := options.Timeout
 	if timeout == 0 {
 		timeout = 2 * time.Second
 	}
-	return &Handler{
+	handler := &Handler{
 		repanic:         options.Repanic,
 		timeout:         timeout,
 		waitForDelivery: options.WaitForDelivery,
 	}
+	return handler.Handle
 }
 
-func (h *Handler) Handle(handler fiber.Handler) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		hub := sentry.GetHubFromContext(c.Context())
-		if hub != nil {
-			hub = sentry.CurrentHub().Clone()
-		}
-		scope := hub.Scope()
-		scope.SetRequest(convert(c.Context()))
-		scope.SetRequestBody(c.Body())
-		c.Locals(valuesKey, hub)
-		defer h.recoverWithSentry(hub, c.Context())
-		return c.Next()
-	}
+func (h *Handler) Handle(c *fiber.Ctx) error {
+	hub := sentry.CurrentHub().Clone()
+
+	scope := hub.Scope()
+	scope.SetRequest(convert(c.Context()))
+	scope.SetRequestBody(c.Body())
+
+	c.Locals(valuesKey, hub)
+
+	defer h.recoverWithSentry(hub, c.Context())
+	return c.Next()
 }
 
 func (h *Handler) recoverWithSentry(hub *sentry.Hub, ctx *fasthttp.RequestCtx) {
@@ -70,6 +69,7 @@ func (h *Handler) recoverWithSentry(hub *sentry.Hub, ctx *fasthttp.RequestCtx) {
 		if eventID != nil && h.waitForDelivery {
 			hub.Flush(h.timeout)
 		}
+
 		if h.repanic {
 			panic(err)
 		}
@@ -81,6 +81,7 @@ func GetHubFromContext(c *fiber.Ctx) *sentry.Hub {
 	if hub, ok := hub.(*sentry.Hub); ok {
 		return hub
 	}
+
 	return nil
 }
 
