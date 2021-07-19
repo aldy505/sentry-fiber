@@ -1,0 +1,41 @@
+name: Test and coverage
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+
+      - name: cache go modules
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Installling dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: go mod vendor
+
+      - name: Run coverage
+        run: go test -v -race -coverprofile=coverage.out -covermode=atomic -failfast
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: go
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
